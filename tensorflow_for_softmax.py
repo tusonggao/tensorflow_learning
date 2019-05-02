@@ -72,7 +72,11 @@ b2 = tf.Variable(0.05, dtype=tf.float32)
 y_true = tf.placeholder(tf.float32, [None, 10])
 # y_pred = tf.matmul(x, W)
 
-y_pred = tf.matmul(tf.sigmoid(tf.matmul(x, W1) + b1), W2) + b2
+
+hidden = tf.sigmoid(tf.add(tf.matmul(x, W1),  b1))
+y_pred = tf.add(tf.matmul(hidden, W2), b2)
+
+
 
 cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=y_pred, labels=y_true))
 gd_step = tf.train.GradientDescentOptimizer(0.15).minimize(cross_entropy)
