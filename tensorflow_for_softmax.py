@@ -77,7 +77,6 @@ hidden = tf.sigmoid(tf.add(tf.matmul(x, W1),  b1))
 y_pred = tf.add(tf.matmul(hidden, W2), b2)
 
 
-
 cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=y_pred, labels=y_true))
 gd_step = tf.train.GradientDescentOptimizer(0.15).minimize(cross_entropy)
 correct_mask = tf.equal(tf.arg_max(y_pred, 1), tf.arg_max(y_true, 1))
