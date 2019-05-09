@@ -5,8 +5,6 @@ Date:20180420
 import numpy as np
 from random import normalvariate  # 正态分布
 
-data_path = 'F:/using_tensorflow/Python-Machine-Learning-Algorithm-3.x-master/Chapter_03 Factorization Machine/code/'
-
 def loadDataSet(data):
     '''导入训练数据
     input:  data(string)训练数据
@@ -171,7 +169,7 @@ def save_model(file_name, w0, w, v):
 if __name__ == "__main__":
     # 1、导入训练数据
     print("---------- 1.load data ---------")
-    dataTrain, labelTrain = loadDataSet(data_path + "train_data.txt")
+    dataTrain, labelTrain = loadDataSet("train_data.txt")
     print("---------- 2.learning ---------")
     # 2、利用随机梯度训练FM模型
     w0, w, v = stocGradAscent(np.mat(dataTrain), labelTrain, 3, 10000, 0.01)
