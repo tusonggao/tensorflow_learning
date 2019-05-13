@@ -27,9 +27,7 @@ x_test /= 255
 print(x_train.shape[0], 'train samples') # 60000
 print(x_test.shape[0], 'test samples')   # 10000
 
-print('shaep is ', x_train.shape)
-
-exit(0)
+print('shape is ', x_train.shape)
 
 # convert class vectors to binary class matrices
 print(y_train[0]) # 5
@@ -203,14 +201,6 @@ y_test = keras.utils.to_categorical(y_test, num_classes)
 # Test loss: 0.10513570926929587
 # Test accuracy: 0.9805 training time:  32.52047562599182 predict time:  0.38000988960266113
 
-# 20 epochs CPU
-# Test loss: 0.11199523535712733
-# Test accuracy: 0.9835 training time:  145.59512853622437 predict time:  0.5484540462493896
-
-# 10 epochs CPU
-# Test loss: 0.09506204784913712
-# Test accuracy: 0.9816 training time:  70.47938346862793 predict time:  0.5073494911193848
-
 
 ########################################################################################################
 
@@ -222,14 +212,14 @@ model.add(BatchNormalization())
 model.add(Dense(633, activation='relu'))
 model.add(BatchNormalization())
 model.add(Dense(32, activation='relu'))
+model.add(BatchNormalization())
 model.add(Dense(num_classes, activation='softmax'))
 
 model.summary()  # 打印出模型概况
 
-exit(0)
-
 model.compile(loss='categorical_crossentropy',
-              optimizer=RMSprop(),
+              # optimizer=RMSprop(),
+              optimizer='adam',
               metrics=['accuracy'])
 
 
@@ -250,3 +240,12 @@ predict_t = time.time()-start_t
 print('Test loss:', score[0])
 print('Test accuracy:', score[1], 'training time: ', training_t, 'predict time: ', predict_t)
 
+# GPU 10 epochs
+# Test loss: 0.09652934396481469
+# Test accuracy: 0.9808 training time:  45.182000398635864 predict time:  0.5715055465698242
+
+# Test loss: 0.1003388614538565
+# Test accuracy: 0.9823 training time:  33.25599408149719 predict time:  0.4050719738006592
+
+# Test loss: 0.0701160401830246
+# Test accuracy: 0.9818 training time:  50.67461037635803 predict time:  0.5143616199493408

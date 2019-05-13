@@ -129,3 +129,15 @@ def CNN_selu():
 
 CNN_relu()
 CNN_selu()
+
+########################################################################
+
+# Test loss: 0.0326494062480182
+# Test accuracy: 0.9907
+# training total cost time 143.3383445739746
+# in CNN_selu
+# Test loss: 0.06422580588509445
+# Test accuracy: 0.9811
+# training total cost time 379.0141623020172
+#
+# Process finished with exit code 0
