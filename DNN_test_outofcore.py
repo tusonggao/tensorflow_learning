@@ -11,9 +11,10 @@ from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import train_test_split
 
 import keras as K
-from keras.layers import Input,Dense,Dropout
+from keras.layers import Input,Dense,Dropout, BatchNormalization
 from keras.models import Model
 from keras.utils import plot_model, to_categorical
+from keras.optimizers import Adam
 from keras.callbacks import Callback
 
 
@@ -34,23 +35,22 @@ def load_numpy_from_file(file_name, delimiter=','):
     y_data = make_y_data(X_data)
 
     print('y_data.sum() is', y_data.sum(), 'y_true.sum() is', y_true.sum(), 'X_y.shape is', X_y.shape)
-
     # print(X_y.shape)
 
 
 def gen_data_to_files(batch_size=512):
     file_num = 0
-    for i in range(10):
+    for i in range(80):
         X_data, y_data = gen_data((batch_size*100, 1000))
         X_y = np.c_[X_data, y_data]
         n_samples = X_data.shape[0]
         for i in range(0, n_samples, batch_size):
-            print('i is ', i)
             upper_bound = min(i + batch_size, n_samples)
             save_numpy_to_file('./make_data/' + str(file_num) + '.dat', X_y[i:upper_bound])
             file_num += 1
             print('file_num is', file_num)
-    print('generate data file ', file_num)
+    print('generate data file finished! total file_num ', file_num)
+
 
 def make_y_data(X_data, use_cols_num=100, seed=1001):
     def tanh(x):
@@ -69,7 +69,7 @@ def make_y_data(X_data, use_cols_num=100, seed=1001):
 
     y_data = np.ones(X_data.shape[0])
     for i in range(use_cols_num):
-        print('i is ', i)
+        # print('i is ', i)
         col_choice = np.random.choice(np.arange(X_data.shape[1]))
         ratio = np.random.choice(ratio_array)
         bias  = np.random.choice(bias_array)
@@ -79,7 +79,7 @@ def make_y_data(X_data, use_cols_num=100, seed=1001):
         y_data = op_func(y_data*ratio + bias)
 
     y_data = (sigmoid(y_data) < 0.7)
-    print('y_data.sum() is', y_data.sum())
+    print('in make_y_data, y_data.sum() is', y_data.sum())
 
     return y_data
 
@@ -87,6 +87,8 @@ def make_y_data(X_data, use_cols_num=100, seed=1001):
 def gen_data(data_shape, random_seed=None):
     if random_seed is not None:
         np.random.seed(random_seed)
+    else:
+        np.random.seed(int(time.time()))
     lower, upper = -10, 10
     height, width = data_shape
     X_data = np.random.rand(height, width)*(upper - lower) + lower
@@ -140,27 +142,119 @@ def keras_DNN_test(X_test, y_test):
     ##cnn = Conv1D(dims,3,padding='same',name='cnn3',activation='relu')(cnn)
     # pool = GlobalMaxPooling1D()(cnn)
     # dense = Dense(dims // 2,activation='relu')(pool)
-    dense = Dense(1500, activation='relu')(sen)
-    dropout = Dropout(0.5)(dense)
-    # dense = Dense(2000, activation='relu')(dropout)
+    dense = Dense(2000, activation='selu')(sen)
+    dense = BatchNormalization()(dense)
+
+    dense = Dense(1000, activation='selu')(dense)
+    dense = BatchNormalization()(dense)
     # dropout = Dropout(0.5)(dense)
-    dense = Dense(1000, activation='relu')(dropout)
-    dropout = Dropout(0.5)(dense)
 
-    dense = Dense(300, activation='relu')(dropout)
-    dropout = Dropout(0.5)(dense)
+    dense = Dense(500, activation='selu')(dense)
+    dense = BatchNormalization()(dense)
+    # dropout = Dropout(0.5)(dense)
 
-    dense = Dense(150, activation='relu')(dropout)
-    dropout = Dropout(0.5)(dense)
+    dense = Dense(300, activation='selu')(dense)
+    dense = BatchNormalization()(dense)
+    # dropout = Dropout(0.5)(dense)
 
-    dense = Dense(50, activation='relu')(dropout)
-    dropout = Dropout(0.5)(dense)
+    dense = Dense(200, activation='selu', kernel_initializer='lecun_normal')(dense)
+    dense = BatchNormalization()(dense)
+    # dropout = Dropout(0.5)(dense)
+
+    dense = Dense(200, activation='selu')(dense)
+    dense = BatchNormalization()(dense)
+    # dropout = Dropout(0.5)(dense)
+
+    # model.add(BatchNormalization())  # 注释掉该行时不使用BatchNormalization()
+
+    # for i in range(35):
+    for i in range(5):
+        dense = Dense(100, activation='selu')(dense)
+        dense = BatchNormalization()(dense)
+        # dropout = Dropout(0.5)(dense)
+
+    # for i in range(65):
+    for i in range(5):
+        dense = Dense(50, activation='selu')(dense)
+        dense = BatchNormalization()(dense)
+        # dropout = Dropout(0.5)(dense)
+
+    # dense = Dense(45, activation='relu')(dropout)
+    # dropout = Dropout(0.5)(dense)
+    #
+    # dense = Dense(40, activation='relu')(dropout)
+    # dropout = Dropout(0.5)(dense)
+    #
+    # dense = Dense(40, activation='relu')(dropout)
+    # dropout = Dropout(0.5)(dense)
+    #
+    # dense = Dense(35, activation='relu')(dropout)
+    # dropout = Dropout(0.5)(dense)
+    #
+    # dense = Dense(35, activation='relu')(dropout)
+    # dropout = Dropout(0.5)(dense)
+    #
+    # dense = Dense(30, activation='relu')(dropout)
+    # dropout = Dropout(0.5)(dense)
+    #
+    # dense = Dense(30, activation='relu')(dropout)
+    # dropout = Dropout(0.5)(dense)
+    #
+    # dense = Dense(25, activation='relu')(dropout)
+    # dropout = Dropout(0.5)(dense)
+    #
+    # dense = Dense(25, activation='relu')(dropout)
+    # dropout = Dropout(0.5)(dense)
+    #
+    # dense = Dense(20, activation='relu')(dropout)
+    # dropout = Dropout(0.5)(dense)
+    #
+    # dense = Dense(20, activation='relu')(dropout)
+    # dropout = Dropout(0.5)(dense)
+    #
+    # dense = Dense(15, activation='relu')(dropout)
+    # dropout = Dropout(0.5)(dense)
+    #
+    # dense = Dense(15, activation='relu')(dropout)
+    # dropout = Dropout(0.5)(dense)
+    #
+    # dense = Dense(10, activation='relu')(dropout)
+    # dropout = Dropout(0.5)(dense)
+    #
+    # dense = Dense(10, activation='relu')(dropout)
+    # dropout = Dropout(0.5)(dense)
+    #
+    #
+    # dense = Dense(5, activation='relu')(dropout)
+    # dropout = Dropout(0.5)(dense)
+    #
+    # dense = Dense(5, activation='relu')(dropout)
+    # dropout = Dropout(0.5)(dense)
+    #
+    # dense = Dense(5, activation='relu')(dropout)
+    # dropout = Dropout(0.5)(dense)
+    #
+    # dense = Dense(5, activation='relu')(dropout)
+    # dropout = Dropout(0.5)(dense)
+
+    dense = Dense(5, activation='selu')(dense)
+    dense = BatchNormalization()(dense)
+    # dropout = Dropout(0.5)(dense)
+
+    dense = Dense(5, activation='selu')(dense)
+    dense = BatchNormalization()(dense)
+    # dropout = Dropout(0.5)(dense)
 
     # output = Dense(1, activation='sigmoid', name='output')(dropout)
-    output = Dense(2, activation='sigmoid', name='output')(dropout)
+    output = Dense(2, activation='sigmoid', name='output')(dense)
     model = Model(sen, output)
     # plot_model(model,to_file=r'./model_png/model.png',show_shapes=True,show_layer_names=True)
-    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+
+    adam = Adam(lr=0.005)
+    # model.compile(loss='mean_squared_error', optimizer=adam)
+
+    model.compile(optimizer=adam, loss='binary_crossentropy', metrics=['accuracy'])
+    # model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
     def generate_instances_from_file(file_nums, data_dir):
         X_y_total = None
@@ -195,7 +289,7 @@ def keras_DNN_test(X_test, y_test):
     for i in range(max_epochs):
         print('current epoch is ', i)
         batch_num = 0
-        for batch_X, batch_y in generate_train_batch(file_total_num=1000):
+        for batch_X, batch_y in generate_train_batch(file_total_num=8000):
             batch_num += 1
             total_batch_num += 1
             batch_y = to_categorical(batch_y)
@@ -213,12 +307,13 @@ def keras_DNN_test(X_test, y_test):
                 # print('predict_y.shape is ', predict_y.shape)
                 auc_score = roc_auc_score(y_test, predict_y)
                 print('predict_y.shape ', predict_y.shape, 'y_test.shape is', y_test.shape)
-                score = model.evaluate(X_test, y_test, verbose=0)
-                test_loss, test_acc = score[0], score[1]
+                train_loss, train_acc = model.evaluate(batch_X, batch_y, verbose=0)
+                test_loss, test_acc = model.evaluate(X_test, y_test, verbose=0)
                 if test_acc_best < test_acc:
                     test_acc_best = test_acc
                 print('epoch:', i, 'total_batch_num:', total_batch_num,
                       'batch_num:', batch_num, 'auc_score:', auc_score,
+                      'train_loss:', train_loss, 'train_acc:', train_acc,
                       'test_loss:', test_loss, 'test_acc:', test_acc,
                       'test_acc_best :', test_acc_best)
 
@@ -261,7 +356,7 @@ def run_saved_DNN_model():
 if __name__ == "__main__":
     # gen_data_to_files(batch_size=512)
 
-    load_numpy_from_file('./make_data/105.dat', delimiter=',')
+    # load_numpy_from_file('./make_data/105.dat', delimiter=',')
 
     # X_data, y_data = gen_data((50000, 1000), random_seed=42)
     # print('y_data[:100]: ', y_data[:100])
@@ -272,11 +367,14 @@ if __name__ == "__main__":
 
     # X_val, y_val = gen_data((50000, 1000), random_seed=42)
 
-    X_val, y_val = gen_data((10000, 1000))
-
-    # print('X_val_new.shape is', y_val_new.shape)
-
+    X_val, y_val = gen_data((20000, 1000), random_seed=42)
+    print('X_val[:, 22] is ', X_val[:, 22])
     keras_DNN_test(X_val, y_val)
+
+    # for i in range(10):
+    #     print('i is', i)
+    #     X_data, y_data = gen_data((512 * 100, 1000), 100)
+    #     X_data1, y_data1 = gen_data((512 * 100, 1000), 100)
 
     # run_saved_DNN_model()
 

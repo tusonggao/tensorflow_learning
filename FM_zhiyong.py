@@ -600,7 +600,7 @@ if __name__ == "__main__":
 
     # showData()
 
-    X_data, y_data = gen_data((80000, 1000))
+    X_data, y_data = gen_data((100000, 1000))
     print('y_data[:100]: ', y_data[:100])
     # showData(X_data, y_data)
 
@@ -610,11 +610,23 @@ if __name__ == "__main__":
 
     print('X_train.shape is ', X_train.shape, 'X_test.shape is ', X_test.shape, 'X_val.shape is ', X_val.shape)
 
+    y_val_rounded_7 = make_y_data(np.round(X_val, 7))
+
+    y_val_rounded_6 = make_y_data(np.round(X_val, 6))
+
+    y_val_rounded_5 = make_y_data(np.round(X_val, 5))
+
+    print('y_val_rounded_5.sum(): {} y_val_rounded_6.sum(): {} y_val_rounded_7.sum(): {} y_val.sum(): {}'.format(
+        y_val_rounded_5.sum(),
+        y_val_rounded_6.sum(),
+        y_val_rounded_7.sum(),
+        y_val.sum()))
+
     # median_mean_guess(X_train, y_train, X_test, y_test)
     # FM_tensorflow(X_train, y_train, X_test, y_test, X_val, y_val)
 
     # lightGBM_regressor_test(X_train, y_train, X_test, y_test, X_val, y_val)
-    lightGBM_classifier_test(X_train, y_train, X_test, y_test, X_val, y_val)
+    # lightGBM_classifier_test(X_train, y_train, X_test, y_test, X_val, y_val)
 
     # keras_DNN_test(X_train, y_train, X_test, y_test, X_val, y_val)
 
