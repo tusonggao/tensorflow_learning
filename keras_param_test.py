@@ -11,7 +11,7 @@ import pandas as pd
 import keras
 from keras.datasets import mnist
 from keras.models import Sequential
-from keras.layers import Dense, Dropout
+from keras.layers import Dense, Dropout, BatchNormalization
 from keras.optimizers import RMSprop, SGD
 
 # the data, split between train and test sets
@@ -152,39 +152,39 @@ y_test = keras.utils.to_categorical(y_test, num_classes)
 ########################################################################################################
 #### TSG model
 
-model = Sequential()
-model.add(Dense(633, activation='relu', input_shape=(784,)))
-model.add(Dropout(0.2))
-model.add(Dense(633, activation='relu'))
-model.add(Dropout(0.2))
-model.add(Dense(32, activation='relu'))
-model.add(Dense(num_classes, activation='softmax'))
-
-model.summary()  # 打印出模型概况
-
-exit(0)
-
-model.compile(loss='categorical_crossentropy',
-              optimizer=RMSprop(),
-              metrics=['accuracy'])
-
-
-start_t = time.time()
-history = model.fit(x_train, y_train,
-                    batch_size=100,
-                    epochs=10,
-                    verbose=2, # verbose是屏显模式, 0是不屏显，1是显示一个进度条，2是每个epoch都显示一行数据
-                    validation_data=(x_test, y_test))
-training_t = time.time()-start_t
-
-
-start_t = time.time()
-score = model.evaluate(x_test, y_test, verbose=0)
-predict_t = time.time()-start_t
-
-
-print('Test loss:', score[0])
-print('Test accuracy:', score[1], 'training time: ', training_t, 'predict time: ', predict_t)
+# model = Sequential()
+# model.add(Dense(633, activation='relu', input_shape=(784,)))
+# model.add(Dropout(0.2))
+# model.add(Dense(633, activation='relu'))
+# model.add(Dropout(0.2))
+# model.add(Dense(32, activation='relu'))
+# model.add(Dense(num_classes, activation='softmax'))
+#
+# model.summary()  # 打印出模型概况
+#
+# exit(0)
+#
+# model.compile(loss='categorical_crossentropy',
+#               optimizer=RMSprop(),
+#               metrics=['accuracy'])
+#
+#
+# start_t = time.time()
+# history = model.fit(x_train, y_train,
+#                     batch_size=100,
+#                     epochs=10,
+#                     verbose=2, # verbose是屏显模式, 0是不屏显，1是显示一个进度条，2是每个epoch都显示一行数据
+#                     validation_data=(x_test, y_test))
+# training_t = time.time()-start_t
+#
+#
+# start_t = time.time()
+# score = model.evaluate(x_test, y_test, verbose=0)
+# predict_t = time.time()-start_t
+#
+#
+# print('Test loss:', score[0])
+# print('Test accuracy:', score[1], 'training time: ', training_t, 'predict time: ', predict_t)
 
 
 # 20 epochs GPU  512
@@ -213,4 +213,40 @@ print('Test accuracy:', score[1], 'training time: ', training_t, 'predict time: 
 
 
 ########################################################################################################
+
+#### TSG model using batch normalizaiton 而不是 droput
+
+model = Sequential()
+model.add(Dense(633, activation='relu', input_shape=(784,)))
+model.add(BatchNormalization())
+model.add(Dense(633, activation='relu'))
+model.add(BatchNormalization())
+model.add(Dense(32, activation='relu'))
+model.add(Dense(num_classes, activation='softmax'))
+
+model.summary()  # 打印出模型概况
+
+exit(0)
+
+model.compile(loss='categorical_crossentropy',
+              optimizer=RMSprop(),
+              metrics=['accuracy'])
+
+
+start_t = time.time()
+history = model.fit(x_train, y_train,
+                    batch_size=100,
+                    epochs=10,
+                    verbose=2, # verbose是屏显模式, 0是不屏显，1是显示一个进度条，2是每个epoch都显示一行数据
+                    validation_data=(x_test, y_test))
+training_t = time.time()-start_t
+
+
+start_t = time.time()
+score = model.evaluate(x_test, y_test, verbose=0)
+predict_t = time.time()-start_t
+
+
+print('Test loss:', score[0])
+print('Test accuracy:', score[1], 'training time: ', training_t, 'predict time: ', predict_t)
 
