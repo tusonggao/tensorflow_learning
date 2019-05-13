@@ -50,38 +50,82 @@ print(x_test.shape[0], 'test samples')
 y_train = keras.utils.to_categorical(y_train, num_classes)
 y_test = keras.utils.to_categorical(y_test, num_classes)
 
-model = Sequential()
-model.add(Conv2D(32, kernel_size=(3, 3),
-                 activation='relu',
-                 input_shape=input_shape))
-model.add(Conv2D(64, (3, 3), activation='relu'))
-model.add(Conv2D(64, (2, 2), activation='relu')) # added by tsg
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.25))
-model.add(Flatten())
-model.add(Dense(128, activation='relu'))
-model.add(Dropout(0.8))
+def CNN_relu():
+    print('in CNN_relu')
+    model = Sequential()
+    model.add(Conv2D(32, kernel_size=(3, 3),
+                     activation='relu',
+                     input_shape=input_shape))
+    model.add(Conv2D(64, (3, 3), activation='relu'))
+    model.add(Conv2D(64, (2, 2), activation='relu')) # added by tsg
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Dropout(0.25))
+    model.add(Flatten())
+    model.add(Dense(128, activation='relu'))
+    model.add(Dropout(0.8))
 
-# added by tsg
-model.add(Dense(256, activation='relu'))
-model.add(Dense(128, activation='relu'))
-model.add(Dense(64, activation='relu'))
-model.add(Dropout(0.5))
-# end added
+    # added by tsg
+    model.add(Dense(256, activation='relu'))
+    # model.add(Dense(128, activation='relu'))
+    # model.add(Dense(64, activation='relu'))
+    model.add(Dropout(0.5))
+    # end added
 
-model.add(Dense(num_classes, activation='softmax'))
+    model.add(Dense(num_classes, activation='softmax'))
 
-model.compile(loss=keras.losses.categorical_crossentropy,
-              optimizer=keras.optimizers.Adadelta(),
-              metrics=['accuracy'])
+    model.compile(loss=keras.losses.categorical_crossentropy,
+                  optimizer=keras.optimizers.Adadelta(),
+                  metrics=['accuracy'])
 
-model.fit(x_train, y_train,
-          batch_size=batch_size,
-          epochs=epochs,
-          verbose=1,
-          validation_data=(x_test, y_test))
-score = model.evaluate(x_test, y_test, verbose=0)
-print('Test loss:', score[0])
-print('Test accuracy:', score[1])
+    model.fit(x_train, y_train,
+              batch_size=batch_size,
+              epochs=epochs,
+              verbose=0,
+              validation_data=(x_test, y_test))
+    score = model.evaluate(x_test, y_test, verbose=0)
+    print('Test loss:', score[0])
+    print('Test accuracy:', score[1])
 
-print('training total cost time', time.time()-start_t)
+    print('training total cost time', time.time()-start_t)
+
+
+def CNN_selu():
+    print('in CNN_selu')
+    model = Sequential()
+    model.add(Conv2D(32, kernel_size=(3, 3),
+                     activation='selu',
+                     input_shape=input_shape))
+    model.add(Conv2D(64, (3, 3), activation='selu'))
+    model.add(Conv2D(64, (2, 2), activation='selu'))  # added by tsg
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Dropout(0.25))
+    model.add(Flatten())
+    model.add(Dense(128, activation='selu'))
+    model.add(Dropout(0.8))
+
+    # added by tsg
+    model.add(Dense(256, activation='selu'))
+    # model.add(Dense(128, activation='relu'))
+    # model.add(Dense(64, activation='relu'))
+    model.add(Dropout(0.5))
+    # end added
+
+    model.add(Dense(num_classes, activation='softmax'))
+
+    model.compile(loss=keras.losses.categorical_crossentropy,
+                  optimizer=keras.optimizers.Adadelta(),
+                  metrics=['accuracy'])
+
+    model.fit(x_train, y_train,
+              batch_size=batch_size,
+              epochs=epochs,
+              verbose=0,
+              validation_data=(x_test, y_test))
+    score = model.evaluate(x_test, y_test, verbose=0)
+    print('Test loss:', score[0])
+    print('Test accuracy:', score[1])
+
+    print('training total cost time', time.time() - start_t)
+
+CNN_relu()
+CNN_selu()
