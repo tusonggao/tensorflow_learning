@@ -142,14 +142,14 @@ def keras_DNN_test(X_test, y_test):
     ##cnn = Conv1D(dims,3,padding='same',name='cnn3',activation='relu')(cnn)
     # pool = GlobalMaxPooling1D()(cnn)
     # dense = Dense(dims // 2,activation='relu')(pool)
-    dense = Dense(2000, activation='selu')(sen)
+    dense = Dense(2000, activation='selu', kernel_initializer='he_normal')(sen)
     dense = BatchNormalization()(dense)
 
-    dense = Dense(1000, activation='selu')(dense)
+    dense = Dense(1000, activation='selu', kernel_initializer='he_normal')(dense)
     dense = BatchNormalization()(dense)
     # dropout = Dropout(0.5)(dense)
 
-    dense = Dense(500, activation='selu')(dense)
+    dense = Dense(500, activation='selu', kernel_initializer='he_normal')(dense)
     dense = BatchNormalization()(dense)
     # dropout = Dropout(0.5)(dense)
 
@@ -157,27 +157,25 @@ def keras_DNN_test(X_test, y_test):
     dense = BatchNormalization()(dense)
     # dropout = Dropout(0.5)(dense)
 
-    dense = Dense(200, activation='selu', kernel_initializer='lecun_normal')(dense)
+    dense = Dense(200, activation='selu', kernel_initializer='he_normal')(dense)
     dense = BatchNormalization()(dense)
     # dropout = Dropout(0.5)(dense)
 
-    dense = Dense(200, activation='selu')(dense)
+    dense = Dense(200, activation='selu', kernel_initializer='he_normal')(dense)
     dense = BatchNormalization()(dense)
     # dropout = Dropout(0.5)(dense)
 
     # model.add(BatchNormalization())  # 注释掉该行时不使用BatchNormalization()
 
-    # for i in range(35):
-    for i in range(5):
-        dense = Dense(100, activation='selu')(dense)
-        dense = BatchNormalization()(dense)
-        # dropout = Dropout(0.5)(dense)
 
-    # for i in range(65):
-    for i in range(5):
-        dense = Dense(50, activation='selu')(dense)
-        dense = BatchNormalization()(dense)
-        # dropout = Dropout(0.5)(dense)
+    # for i in range(5):
+    #     dense = Dense(100, activation='selu')(dense)
+    #     dense = BatchNormalization()(dense)
+    #
+    # for i in range(5):
+    #     dense = Dense(50, activation='selu')(dense)
+    #     dense = BatchNormalization()(dense)
+
 
     # dense = Dense(45, activation='relu')(dropout)
     # dropout = Dropout(0.5)(dense)

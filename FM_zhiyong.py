@@ -126,8 +126,7 @@ def gen_data_test(data_shape):
 
     return X_data, y_data
 
-
-def gen_data(data_shape):
+def gen_data_new(data_shape):
     np.random.seed(1001)
     lower, upper = -10, 10
     height, width = data_shape
@@ -135,9 +134,33 @@ def gen_data(data_shape):
     print('X_data.shape is', X_data.shape)
     print('X_data[:, 3] is ', X_data[:, 3])
 
+    col1, col2, col3 = 111, 222, 333
+    # y_data = X_data[:, col1] * X_data[:, col2] * X_data[:, col3] > 0
+    y_data = X_data[:, col1] > 0
+
+    print('X_data.shape is', X_data.shape)
+
+    y_data_pos = y_data[y_data == 1]
+    y_data_neg = y_data[y_data == 0]
+
+    print('y_data_pos.shape y_data_neg.shape is', y_data_pos.shape, y_data_neg.shape)
+    print('X_data.shape is', X_data.shape)
+
+    return X_data, y_data
+
+
+def gen_data(data_shape):
+    # np.random.seed(int(time.time()))
+    # np.random.seed(1001)
+    lower, upper = -10, 10
+    height, width = data_shape
+    X_data = np.random.rand(height, width)*(upper - lower) + lower
+    print('X_data.shape is', X_data.shape)
+    print('X_data[:, 3] is ', X_data[:, 3])
+
     col1, col2, col3, col4 = 201, 601, 801, 995
-    # y_data = (0.3*X_data[:, col1]**2 + 2*X_data[:, col1]*X_data[:, col1] +
-    #           1.3*X_data[:, col1]**2) <= 16
+    y_data = (0.3*X_data[:, col1]**2 + 2*X_data[:, col1]*X_data[:, col1] +
+              1.3*X_data[:, col1]**2) <= 16
 
     # y_data = (0.3*X_data[:,col1]**2 + 0.3*np.sin(X_data[:,col1]*X_data[:,col2]) +
     #           1.3*X_data[:,col2]**2 + 0.8*np.cos(X_data[:,col1]*X_data[:,col3]) +
@@ -147,7 +170,14 @@ def gen_data(data_shape):
     #           0.38*X_data[:,col4]*X_data[:,col2]*X_data[:,col3] +
     #           0.45*X_data[:,col1]*X_data[:,col2]*X_data[:,col3]*X_data[:,col4]) <= 40
 
-    y_data = make_y_data(X_data)
+    # y_data = make_y_data(X_data)
+
+    col1, col2, col3, col4 = 111, 222, 333, 444
+    y_data = X_data[:, col1] * X_data[:, col2] * X_data[:, col3] * X_data[:, col4] > 0
+    y_data = X_data[:, col1] * X_data[:, col2] * X_data[:, col3] > 0
+    # y_data = X_data[:, col1] > 0
+
+    # y_data = np.sin(X_data[:, col1] * X_data[:, col2] * X_data[:, col3]*7)<=0.1
 
     # fea1 = X_data[:,col1]*X_data[:,col2]* X_data[:,col3]
     # fea2 = X_data[:,col1]*X_data[:,col2]*X_data[:,col3]*X_data[:,col4]
@@ -610,23 +640,23 @@ if __name__ == "__main__":
 
     print('X_train.shape is ', X_train.shape, 'X_test.shape is ', X_test.shape, 'X_val.shape is ', X_val.shape)
 
-    y_val_rounded_7 = make_y_data(np.round(X_val, 7))
-
-    y_val_rounded_6 = make_y_data(np.round(X_val, 6))
-
-    y_val_rounded_5 = make_y_data(np.round(X_val, 5))
-
-    print('y_val_rounded_5.sum(): {} y_val_rounded_6.sum(): {} y_val_rounded_7.sum(): {} y_val.sum(): {}'.format(
-        y_val_rounded_5.sum(),
-        y_val_rounded_6.sum(),
-        y_val_rounded_7.sum(),
-        y_val.sum()))
+    # y_val_rounded_7 = make_y_data(np.round(X_val, 7))
+    #
+    # y_val_rounded_6 = make_y_data(np.round(X_val, 6))
+    #
+    # y_val_rounded_5 = make_y_data(np.round(X_val, 5))
+    #
+    # print('y_val_rounded_5.sum(): {} y_val_rounded_6.sum(): {} y_val_rounded_7.sum(): {} y_val.sum(): {}'.format(
+    #     y_val_rounded_5.sum(),
+    #     y_val_rounded_6.sum(),
+    #     y_val_rounded_7.sum(),
+    #     y_val.sum()))
 
     # median_mean_guess(X_train, y_train, X_test, y_test)
     # FM_tensorflow(X_train, y_train, X_test, y_test, X_val, y_val)
 
     # lightGBM_regressor_test(X_train, y_train, X_test, y_test, X_val, y_val)
-    # lightGBM_classifier_test(X_train, y_train, X_test, y_test, X_val, y_val)
+    lightGBM_classifier_test(X_train, y_train, X_test, y_test, X_val, y_val)
 
     # keras_DNN_test(X_train, y_train, X_test, y_test, X_val, y_val)
 
