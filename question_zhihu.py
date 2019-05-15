@@ -14,14 +14,13 @@ from sklearn.model_selection import train_test_split
 
 from keras.layers import Input, Dense, Dropout, BatchNormalization
 from keras.models import Model
-from keras.utils import plot_model, to_categorical
+from keras.utils import plot_model
 from keras.optimizers import Adam
 from keras.callbacks import Callback
 
 
 def rmse_tsg(y_true, y_pred):
     return np.sqrt(np.mean(np.square(y_true - y_pred)))
-
 
 def showData(X_data, y_data):
     print('X_data.shape is', X_data.shape)
@@ -45,23 +44,23 @@ def gen_data(data_shape, random_seed=None):
 
     height, width = data_shape
     X_data = np.random.rand(height, width)*(upper - lower) + lower
-    print('X_data.shape is', X_data.shape)
-    print('X_data[:, 3] is ', X_data[:, 3])
+    # print('X_data.shape is', X_data.shape)
+    # print('X_data[:, 3] is ', X_data[:, 3])
 
     col1, col2, col3, col4 = 111, 222, 333, 444
     # y_data = X_data[:, col1] * X_data[:, col2] * X_data[:, col3] * X_data[:, col4] > 0  # 无法学习到
-    y_data = X_data[:, col1] * X_data[:, col2] * X_data[:, col3] > 0  # 无法学习到
-    # y_data = (X_data[:, col1] - 1) * (X_data[:, col2] - 1) * (X_data[:, col3] - 1)> 0  #可以学到
-    # y_data = (X_data[:, col1] - 1) * (X_data[:, col2] - 1) > 0  #可以学到
+    # y_data = X_data[:, col1] * X_data[:, col2] * X_data[:, col3] > 0  # 无法学习到
+    y_data = (X_data[:, col1] - 0.2) * (X_data[:, col2] - 0.2) * (X_data[:, col3] - 0.2)> 0  #可以学到
+    # y_data = (X_data[:, col1] - 0.2) * (X_data[:, col2] - 0.2) > 0  #可以学到
     # y_data = X_data[:, col1] > 0   # 可以学到
 
-    print('X_data.shape is', X_data.shape)
+    # print('X_data.shape is', X_data.shape)
 
     y_data_pos = y_data[y_data == 1]
     y_data_neg = y_data[y_data == 0]
 
     print('y_data_pos.shape y_data_neg.shape is', y_data_pos.shape, y_data_neg.shape)
-    print('X_data.shape is', X_data.shape)
+    # print('X_data.shape is', X_data.shape)
 
     return X_data, y_data
 
@@ -86,17 +85,18 @@ def batcher(X_, y_=None, batch_size=-1):
 
 def keras_DNN_test(X_test, y_test):
     sen = Input(shape=(1000,), dtype='float32', name='input')
-    dense = Dense(2000, activation='selu', kernel_initializer='he_uniform')(sen)
-    #     dense = Dense(2000, activation='relu', kernel_initializer='lecun_normal')(sen)
+    # dense = Dense(2000, activation='selu', kernel_initializer='he_uniform')(sen)
+    dense = Dense(2000, activation='relu', kernel_initializer='lecun_normal')(sen)
     dense = BatchNormalization()(dense)
 
-    dense = Dense(1000, activation='selu', kernel_initializer='he_uniform')(dense)
+    dense = Dense(1000, activation='selu', kernel_initializer='lecun_normal')(dense)
     dense = BatchNormalization()(dense)
 
-    dense = Dense(200, activation='selu', kernel_initializer='he_uniform')(dense)
+    dense = Dense(200, activation='selu', kernel_initializer='lecun_normal')(dense)
     dense = BatchNormalization()(dense)
 
-    output = Dense(2, activation='sigmoid', name='output')(dense)
+    # output = Dense(2, activation='sigmoid', name='output')(dense)
+    output = Dense(1, activation='sigmoid', name='output')(dense)
     model = Model(sen, output)
 
     adam = Adam(lr=0.001)
@@ -108,18 +108,28 @@ def keras_DNN_test(X_test, y_test):
     # model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy']
 
     def generate_train_batch(batch_size=256):
-        X_data, y_data = gen_data((batch_size * 100, 1000))
-        X_y = np.c_[X_data, y_data]
+        # X_data, y_data = gen_data((batch_size * 200, 1000), random_seed=10001)
+        X_data, y_data = gen_data((batch_size * 200, 1000))
+
         n_samples = X_data.shape[0]
 
-        for i in range(0, n_samples, batch_size):
-            upper_bound = min(i + batch_size, n_samples)
-            yield X_data[i:upper_bound], y_data[i:upper_bound]
+        # np.random.seed(int(time.time()))
+        rnd_idx = np.random.permutation(len(X_data))
+        print('rnd_idx[:10] is', rnd_idx[:10])
+        n_batches = len(X_data) // batch_size
+        for batch_idx in np.array_split(rnd_idx, n_batches):
+            X_batch, y_batch = X_data[batch_idx], y_data[batch_idx]
+            yield X_batch, y_batch
 
-    max_epochs = 100
+        del X_data, y_data
+
+        # for i in range(0, n_samples, batch_size):
+        #     upper_bound = min(i + batch_size, n_samples)
+        #     yield X_data[i:upper_bound], y_data[i:upper_bound]
+
+    max_epochs = 10
     batch_size = 256
 
-    y_test = to_categorical(y_test)
     auc_score_lst = []
     total_batch_num_lst = []
     total_batch_num = 0
@@ -131,21 +141,15 @@ def keras_DNN_test(X_test, y_test):
         for batch_X, batch_y in generate_train_batch(batch_size):
             batch_num += 1
             total_batch_num += 1
-            batch_y = to_categorical(batch_y)
-            #             print('epoch is ', i,
-            #                   'batch_num is ', batch_num,
-            #                   'batch_X.shape is ', batch_X.shape,
-            #                   'batch_y.shape is ', batch_y.shape)
-
             model.train_on_batch(batch_X, batch_y)
 
-            if total_batch_num % 25 == 0:
+            if total_batch_num % 30 == 0:
                 start_t = time.time()
                 predict_y = model.predict(X_test)
                 # print('predict_y[:20] is ', predict_y[:20])
                 # print('predict_y.shape is ', predict_y.shape)
                 auc_score = roc_auc_score(y_test, predict_y)
-                print('predict_y.shape ', predict_y.shape, 'y_test.shape is', y_test.shape)
+                # print('predict_y.shape ', predict_y.shape, 'y_test.shape is', y_test.shape)
                 train_loss, train_acc = model.evaluate(batch_X, batch_y, verbose=0)
                 test_loss, test_acc = model.evaluate(X_test, y_test, verbose=0)
                 if test_acc_best < test_acc:
@@ -208,17 +212,18 @@ def lightGBM_classifier_test(X_train, y_train, X_test, y_test, X_val, y_val):
 #################################################################################################
 
 if __name__ == "__main__":
-    X_data, y_data = gen_data((100000, 1000))
-    print('y_data[:100]: ', y_data[:100])
-    # showData(X_data, y_data)
-
-    print('X_data.shape is', X_data.shape)
-    X_train, X_test, y_train, y_test = train_test_split(X_data, y_data, test_size=0.3, random_state=42)
-    X_test, X_val, y_test, y_val = train_test_split(X_test, y_test, test_size=0.5, random_state=42)
-
-    print('X_train.shape is ', X_train.shape, 'X_test.shape is ', X_test.shape, 'X_val.shape is ', X_val.shape)
+    # X_data, y_data = gen_data((100000, 1000))
+    # print('y_data[:100]: ', y_data[:100])
+    # # showData(X_data, y_data)
+    #
+    # print('X_data.shape is', X_data.shape)
+    # X_train, X_test, y_train, y_test = train_test_split(X_data, y_data, test_size=0.3, random_state=42)
+    # X_test, X_val, y_test, y_val = train_test_split(X_test, y_test, test_size=0.5, random_state=42)
+    #
+    # print('X_train.shape is ', X_train.shape, 'X_test.shape is ', X_test.shape, 'X_val.shape is ', X_val.shape)
 
     # lightGBM_classifier_test(X_train, y_train, X_test, y_test, X_val, y_val)
 
+    X_val, y_val = gen_data((20000, 1000), random_seed=42)
     keras_DNN_test(X_val, y_val)
 
