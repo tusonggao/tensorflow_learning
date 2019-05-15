@@ -1,8 +1,3 @@
-'''
-Date:20180420
-@author: zhaozhiyong
-'''
-
 import time
 import numpy as np
 from random import normalvariate  # 正态分布
@@ -58,17 +53,6 @@ def make_y_data(X_data, use_cols_num=100, seed=1001):
 def rmse_tsg(y_true, y_pred):
     return np.sqrt(np.mean(np.square(y_true - y_pred)))
 
-# def showData(X_data, y_data):
-#     train_data = np.loadtxt(data_path + "train_data.txt")
-#     # print('train_data[2] is ', train_data[:, 2])
-#     print('train_data.shape is', train_data.shape)
-#     train_data_pos = train_data[train_data[:, 2] == 1]
-#     train_data_neg = train_data[train_data[:, 2] == 0]
-#
-#     print('train_data_pos.shape is', train_data_pos.shape)
-#     plt.plot(train_data_pos[:, 0], train_data_pos[:, 1], "ro")
-#     plt.plot(train_data_neg[:, 0], train_data_neg[:, 1], "bo")
-#     plt.show()
 
 def showData(X_data, y_data):
     print('X_data.shape is', X_data.shape)
@@ -81,50 +65,6 @@ def showData(X_data, y_data):
     plt.show()
 
 
-# def gen_data_from_file():
-#     start_t = time.time()
-#     X_y = np.loadtxt('./test_hu.txt', delimiter=',')
-#     X, y = X_y[:,:-1], X_y[:, -1]
-#     print('X_y.shape is', X_y.shape, 'X.shape is', X.shape, 'y.shape is', y.shape)
-#     print('load cost time: ', time.time() - start_t)
-#     return X, y
-
-
-def gen_data_from_file():
-    X_y = np.loadtxt('./test_hu.txt', delimiter=',')
-    X, y = X_y[:,:-1], X_y[:, -1]
-    print('X_y.shape is', X_y.shape, 'X.shape is', X.shape, 'y.shape is', y.shape)
-    return X, y
-
-
-def gen_data_test(data_shape):
-    np.random.seed(1001)
-    lower, upper = -10, 10
-    height, width = data_shape
-    X_data = np.random.rand(height, width)*(upper - lower) + lower
-    print('X_data.shape is', X_data.shape)
-    print('X_data[:, 3] is ', X_data[:, 3])
-
-    col1, col2, col3 = 201, 601, 801
-    y_data = (0.3 * X_data[:, col1] ** 2 + 1.1 * X_data[:, col1] * X_data[:, col2] +
-              0.6 * X_data[:, col1] ** 2 + 0.7 * X_data[:, col2] * X_data[:, col3]) <= 20
-
-    print('X_data.shape is', X_data.shape)
-
-    y_data_pos = y_data[y_data == 1]
-    y_data_neg = y_data[y_data == 0]
-
-    print('y_data_pos.shape y_data_neg.shape is', y_data_pos.shape, y_data_neg.shape)
-
-
-    X_y = np.c_[X_data, y_data]
-    X_y_train = X_y[:50000]
-    X_y_test = X_y[50000:]
-    start_t = time.time()
-    np.savetxt('./test_hu.txt', X_y_train, delimiter=',')
-    print('save time cost time: ', time.time() - start_t)
-
-    return X_data, y_data
 
 def gen_data_new(data_shape):
     np.random.seed(1001)
@@ -152,7 +92,9 @@ def gen_data_new(data_shape):
 def gen_data(data_shape):
     # np.random.seed(int(time.time()))
     # np.random.seed(1001)
-    lower, upper = -10, 10
+    # lower, upper = -10, 10
+    lower, upper = -1, 1
+
     height, width = data_shape
     X_data = np.random.rand(height, width)*(upper - lower) + lower
     print('X_data.shape is', X_data.shape)
@@ -175,9 +117,8 @@ def gen_data(data_shape):
     col1, col2, col3, col4 = 111, 222, 333, 444
     # y_data = X_data[:, col1] * X_data[:, col2] * X_data[:, col3] * X_data[:, col4] > 0
     y_data = X_data[:, col1] * X_data[:, col2] * X_data[:, col3] > 0
-    # y_data = (X_data[:, col1] - 2) * (X_data[:, col2] - 5) * (X_data[:, col3] + 3)> 0
-    # y_data = (X_data[:, col1] - 1) * (X_data[:, col2] - 1) * (X_data[:, col3] - 1)> 0
-    # y_data = X_data[:, col1] > 0
+    # y_data = (X_data[:, col1] - 1) * (X_data[:, col2] - 1) * (X_data[:, col3] - 1)> 0  #可以学到
+    # y_data = X_data[:, col1] > 0   # 可以学到
 
     # y_data = np.sin(X_data[:, col1] * X_data[:, col2] * X_data[:, col3]*7)<=0.1
 
@@ -373,7 +314,6 @@ def median_mean_guess(X_train, y_train, X_test, y_test):
     print(f'median_val: {median_val} mean_val:{mean_val} zero_rmse:{zero_rmse}')
     print(f'median_rmse: {median_rmse} mean_rmse:{mean_rmse} zero_rmse:{zero_rmse}')
     return median_rmse, mean_rmse, zero_rmse
-
 
 
 def batcher(X_, y_=None, batch_size=-1):
