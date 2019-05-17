@@ -2,8 +2,7 @@ import time
 import os
 import win32api
 
-urls_to_open = ['https://colab.research.google.com/drive/1F2_7Zf4OBBF1iRsYQO7g0CuPG6CMV122#scrollTo=NEQ4JE_2SS_N',
-                'https://colab.research.google.com/drive/1Rr_A1I8K8rJvAFql7k4POHqc8YWURrJD#scrollTo=NEQ4JE_2SS_N']
+urls_to_open = ['https://colab.research.google.com/drive/1gIFoI0O38TcFeyu2JLa3L2kgni4bIiZz#scrollTo=n1ZZ-a194Kp4']
 browser_path = 'C:/Users/tusonggao/AppData/Local/Google/Chrome/Application/chrome.exe'
 
 num = 0
